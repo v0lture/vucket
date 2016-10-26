@@ -1,6 +1,10 @@
 # vucket
 A bucket of various APIs used across v0lture projects
 
+## Requirements
+PHP: `5.5`, `7.0` with package `php-curl` installed.
+MySQL: `5.6`, however other versions will most likely work.
+
 ## Authentication
 Vucket auth will handle all of the authentication for outside sources like Github or Google.
 
