@@ -45,7 +45,7 @@
       $c = curl_init();
       curl_setopt($c, CURLOPT_URL, $url);
       curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-      curl_optset($c, CURLOPT_USERAGENT, "Vucket");
+      curl_setopt($c, CURLOPT_USERAGENT, "Vucket");
 
       $resp = curl_exec($c);
       curl_close($c);
@@ -56,7 +56,14 @@
         header("Location: https://vucket.v0lture.com/ui/github_connect.php?state=error&msg=".$json["message"]);
       } else {
         // valid af
-        echo "you did good son.";
+
+        if($mysql->connect_error == null) {
+          // mysql didnt connect
+          header("Location: https://vucket.v0lture.com/ui/report.php?app=Vucket&code=VI003");
+        } else {
+          // mysql did connect
+
+        }
       }
     }
   }
