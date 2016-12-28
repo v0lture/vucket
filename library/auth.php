@@ -13,7 +13,7 @@ class Auth {
   }
 
   // login with user and pass
-  public function UP($u, $p){
+  public function login($u, $p){
 
     // validate
     if($u == "" || $p == "") {
@@ -47,16 +47,26 @@ class Auth {
               // witty comment
               // correct pass
 
-              // set session and generate token
+              // is frozen?
+              if($rd["frozen"] == 0) {
 
-              // submit login to logs
-              $token = $this->token($rd["tokentag"]);
+                // melted, proceed with token
+                $token = $this->token($rd["tokentag"]);
 
-              $t = $this->telemetry->auth("account_login", $u);
-              if($t == "success") {
-                return Array("logged" => "yes", "token" => $token["token"]);
+                $t = $this->telemetry->auth("account_login", $u);
+                if($t == "success") {
+                  return Array("logged" => "yes", "token" => $token["token"]);
+                } else {
+                  return Array("logged" => "no: ".$t, "token" => $token["token"]);
+                }
               } else {
-                return Array("logged" => "no: ".$t, "token" => $token["token"]);
+                // frozen, bounce back with frozen error
+                $t = $this->telemetry->auth("account_login_frozen", $u);
+                if($t == "success") {
+                  return Array("logged" => "yes", "error" => "account_frozen");
+                } else {
+                  return Array("logged" => "no: ".$t, "error" => "account_frozen");
+                }
               }
 
             } else {
@@ -88,7 +98,7 @@ class Auth {
 
     // code by: http://stackoverflow.com/questions/4356289/php-random-string-generator/31107425#31107425
     // generate a random token at the length of 50
-    $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*(){}[]-=';
+    $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
     $str = '';
     $max = mb_strlen($keyspace, '8bit') - 1;
     for ($i = 0; $i < 50; ++$i) {
@@ -123,7 +133,7 @@ class Auth {
     // insert token
     if($this->dbc->query("INSERT INTO `tokens` (`id`, `tokentag`, `token`, `activation`, `expiration`) VALUES (NULL, '".$data[0]."', '".$data[1]."', '".$data[2]."', '".$data[3]."');")) {
       // success, log and return token
-      $t = $this->telemetry->auth("token", $data[1]);
+      $t = $this->telemetry->token("generate", $data[1]);
       if($t == "success") {
         return Array("logged" => "yes", "token" => $str);
       } else {
@@ -136,6 +146,70 @@ class Auth {
         return Array("logged" => "yes", "error" => "token_creation", "ctx" => $this->dbc->error_list);
       } else {
         return Array("logged" => "no: ".$t, "error" => "token_creation", "ctx" => $this->dbc->error_list);
+      }
+    }
+
+  }
+
+  // token validation
+  public function validateToken($token) {
+
+    // vars
+    $token = filter($token);
+
+    // query
+    if($rd = $this->dbc->query("SELECT * FROM `tokens` WHERE token = '".$token."'")) {
+      // only one result
+      if($rd->num_rows == 1) {
+        // yes, token exists
+
+        // check expiration
+        $current = microtime(true);
+        while($d = $rd->fetch_assoc()) {
+          if($d["expiration"] > $current) {
+            // not expired
+            $t = $this->telemetry->token("use", $token);
+            if($t == "success") {
+              return Array("logged" => "yes", "token" => "is_valid");
+            } else {
+              return Array("logged" => "no: ".$t, "token" => "is_valid");
+            }
+          } else {
+            // expired, like the yogurt in my fridge
+            $t = $this->telemetry->token("expired", $token);
+            if($t == "success") {
+              return Array("logged" => "yes", "error" => "token_expired");
+            } else {
+              return Array("logged" => "no: ".$t, "error" => "token_expired");
+            }
+          }
+        }
+
+      } elseif($rd->num_rows > 1) {
+        // multiple results
+        $t = $this->telemetry->error("overlapping_token", "auth.php > Auth > validateToken() > query", $this->dbc->error);
+        if($t == "success") {
+          return Array("logged" => "yes", "error" => "token_filter");
+        } else {
+          return Array("logged" => "no: ".$t, "error" => "token_filter");
+        }
+      } else {
+        // no results
+        $t = $this->telemetry->auth("token_invalid", $token);
+        if($t == "success") {
+          return Array("logged" => "yes", "error" => "token_invalid");
+        } else {
+          return Array("logged" => "no: ".$t, "error" => "token_invalid");
+        }
+      }
+
+    } else {
+      // can't query this (https://www.youtube.com/watch?v=otCpCn0l4Wo)
+      $t = $this->telemetry->error("token_filter", "auth.php > Auth > validateToken() > query", $this->dbc->error);
+      if($t == "success") {
+        return Array("logged" => "yes", "error" => "token_filter");
+      } else {
+        return Array("logged" => "no: ".$t, "error" => "token_filter");
       }
     }
 

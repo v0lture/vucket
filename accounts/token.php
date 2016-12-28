@@ -13,12 +13,9 @@
   $telemetry = new Telemetry($db);
   $auth = new Auth($db, $telemetry);
 
-  // check if vars are both submitted
-  if(isset($_POST["username"]) && isset($_POST["password"])) {
-    $u = $_POST["username"];
-    $p = $_POST["password"];
-
-    $resp = $auth->login($u, $p);
+  if(isset($_POST["token"])) {
+    $t = $_POST["token"];
+    $resp = $auth->validateToken($t);
   } else {
     $error = "missing_vars";
   }
@@ -32,7 +29,7 @@
     $error = $error;
   } else {
     $state = "success";
-    $result = Array("token" => $resp["token"], "username" => $u);
+    $result = "valid";
   }
 
   // process into json
