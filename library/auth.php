@@ -73,7 +73,7 @@ class Auth {
 
       } else {
         // error, log it, and respond back with details
-        $t = $this->telemetry->error("account_filter", "auth.php > Auth > UP() > account validation");
+        $t = $this->telemetry->error("account_filter", "auth.php > Auth > UP() > account validation", $this->dbc->error_list);
         if($t == "success") {
           return Array("logged" => "yes", "error" => "account_filter", "ctx" => $this->dbc->error_list);
         } else {
@@ -123,7 +123,7 @@ class Auth {
     // insert token
     if($this->dbc->query("INSERT INTO `tokens` (`id`, `tokentag`, `token`, `activation`, `expiration`) VALUES (NULL, '".$data[0]."', '".$data[1]."', '".$data[2]."', '".$data[3]."');")) {
       // success, log and return token
-      $t = $this->telemetry->auth("token", $data);
+      $t = $this->telemetry->auth("token", $data[1]);
       if($t == "success") {
         return Array("logged" => "yes", "token" => $str);
       } else {
@@ -131,7 +131,7 @@ class Auth {
       }
     } else {
       // log error and return
-      $t = $this->telemetry->error("token_creation", "auth.php > Auth > token() > token creation");
+      $t = $this->telemetry->error("token_creation", "auth.php > Auth > token() > token creation", $this->dbc->error_list);
       if($t == "success") {
         return Array("logged" => "yes", "error" => "token_creation", "ctx" => $this->dbc->error_list);
       } else {
