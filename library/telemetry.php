@@ -69,6 +69,25 @@
       }
     }
 
+    // user logging
+    public function user($action, $logtag) {
+      // init vars
+      $ip = filter($_SERVER["REMOTE_ADDR"]);
+      $action = filter($action);
+      $logtag = filter($logtag);
+      $time = filter(microtime(true));
+      $mysql = "";
+
+      // submit to database
+      if($this->dbc->query("INSERT INTO `log` (id, code, trace, mysql, ip, time, type) VALUES (NULL, '".$action."', '".$logtag."', '".$mysql."', '".$ip."', '".$time."', 'user')")){
+        return "success";
+      } else {
+        // logception
+        $this->error("telemetry_auth", "telemetry.php > auth()", $this->dbc->error);
+        return "error: ".$this->dbc->error;
+      }
+    }
+
   }
 
  ?>

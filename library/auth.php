@@ -170,7 +170,8 @@ class Auth {
             // not expired
             $t = $this->telemetry->token("use", $token);
             if($t == "success") {
-              return Array("logged" => "yes", "token" => "is_valid");
+              // only reply with tokentag additionally IF the event was logged
+              return Array("logged" => "yes", "token" => "is_valid", "tokentag" => $d["tokentag"]);
             } else {
               return Array("logged" => "no: ".$t, "token" => "is_valid");
             }
