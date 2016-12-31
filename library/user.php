@@ -163,7 +163,6 @@
           $selector = "WHERE username = '".$id."'";
         } elseif(isset($iU["error"])) {
           // error occurred, forward error from isUser
-          $this->telemetry->functionLog("success", "readUser", 0);
           if($iU["logged"] == "yes") {
             return Array("logged" => "yes", "error" => "isuser_failed");
           } else {
@@ -172,7 +171,6 @@
         } else {
           // we don't exist
           $t = $this->telemetry->user("readUser_nonexistent", $id);
-          $this->telemetry->functionLog("success", "readUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "readUser_nonexistent");
           } else {
@@ -288,6 +286,70 @@
       }
       $this->telemetry->functionLog("success", "createTag", 0);
       return $str;
+    }
+
+    // modify user
+    public function modifyUser($id, $prop, $value) {
+      // we gotta change these filters at some point boss, they sure are filtering a lot of things
+      $prop = filter($prop);
+      $id = filter($id);
+      $value = filter($value);
+
+      // determine ID type
+      if(is_numeric($id)) {
+        // user ID
+        $selector = "WHERE id = ".$id;
+      } else {
+        // username
+
+        // check if exists
+        $iU = $this->isUser($id);
+        if($iU["isuser"] == true) {
+          // set selector
+          $selector = "WHERE username = '".$id."'";
+        } elseif(isset($iU["error"])) {
+          // error occurred, forward error from isUser
+          if($iU["logged"] == "yes") {
+            return Array("logged" => "yes", "error" => "isuser_failed");
+          } else {
+            return Array("logged" => $iU["logged"], "error" => "isuser_failed");
+          }
+        } else {
+          // we don't exist
+          $t = $this->telemetry->user("modifyUser_nonexistent", $id);
+          if($t["d"] == "success") {
+            return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
+          } else {
+            return Array("logged" => "no: ".$t["d"], "error" => "modifyUser_nonexistent");
+          }
+        }
+      }
+
+      // get old val
+      $old = $this->readUser($id, $prop);
+
+      // check if errors returned
+      if(isset($old["error"])) {
+        return Array("logged" => $old["logged"], "error" => $old["error"]);
+      } else {
+
+        // query
+        if($this->dbc->query("UPDATE `accounts` SET `".$prop."` = '".$value."'".$selector)){
+          $t = $this->telemetry->user("modifyUser", $id);
+          if($t["d"] == "success") {
+            return Array("logged" => "yes", "data" => Array("result" => true, "old" => $old["data"][$prop], "new" => $value));
+          } else {
+            return Array("logged" => "no: ".$t["d"], "data" => Array("result" => true, "old" => $old["data"][$prop], "new" => $value));
+          }
+        } else {
+          $t = $this->telemetry->error("modifyUser_query", $id);
+          if($t["d"] == "success") {
+            return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
+          } else {
+            return Array("logged" => "no: ".$t["d"], "error" => "modifyUser_nonexistent");
+          }
+        }
+      }
     }
 
   }

@@ -93,6 +93,15 @@
         }
       }
 
+      // Modify user email
+      $modifyprop = $user->readUser($usertokendata["data"]["username"], "email", "newemail@email.com");
+      if(isset($modifyprop["error"])) {
+        trigger_error("Modify user property (via USERNAME) (logged: ".$modifyprop["logged"]."): ".$modifyprop["error"], E_USER_WARNING);
+      } else {
+        echo "Modify user property (via USERNAME) (logged: ".$modifyprop["logged"]."): ".$modifyprop["data"]["old"]." => ".$modifyprop["data"]["new"];
+      }
+
+
       // Finalize dump of MySQL logs
       var_dump($db->error_list);
     }
