@@ -22,7 +22,7 @@
       $reg = $user->register("username", "password", "email@email.email");
       if(isset($reg["error"])) {
         var_dump($db->error_list);
-        throw new Exception("Register failed (logged: ".$reg["logged"]."): ".$reg["error"]);
+        trigger_error("Register failed (logged: ".$reg["logged"]."): ".$reg["error"], E_USER_WARNING);
       } else {
         echo "Registered correctly!\r\n";
       }
@@ -30,16 +30,16 @@
       // Login
       $login = $auth->login("username", "password");
       if(isset($login["error"])) {
-        throw new Exception("Login (logged: ".$login["logged"]."): ".$login["error"]);
+        trigger_error("Login (logged: ".$login["logged"]."): ".$login["error"], E_USER_WARNING);
       } else {
-        $token = $reg["token"];
+        $token = $login["token"];
         echo "Logged in!\r\n";
       }
 
       // Validate token
       $tok = $auth->validateToken($token);
       if(isset($tok["error"])) {
-        throw new Exception("Token Validation: ".$login["error"]);
+        trigger_error("Token Validation (logged: ".$tok["logged"]."): ".$tok["error"], E_USER_WARNING);
       } else {
         echo "Token valid!\r\n";
       }
