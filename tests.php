@@ -18,13 +18,17 @@
       $auth = new Auth($db, $telemetry);
       $user = new User($auth, $db, $telemetry);
 
+
+      //
+      // AUTHENTICATON
+      //
+
       // Register
       $reg = $user->register("username", "password", "email@email.email");
       if(isset($reg["error"])) {
-        var_dump($db->error_list);
         trigger_error("Register failed (logged: ".$reg["logged"]."): ".$reg["error"], E_USER_WARNING);
       } else {
-        echo "Registered correctly!\r\n";
+        echo "\r\nRegistered correctly! (logged: ".$reg["logged"].")\r\n";
       }
 
       // Login
@@ -33,7 +37,7 @@
         trigger_error("Login (logged: ".$login["logged"]."): ".$login["error"], E_USER_WARNING);
       } else {
         $token = $login["token"];
-        echo "Logged in!\r\n";
+        echo "Logged in! (logged: ".$login["logged"].")\r\n";
       }
 
       // Validate token
@@ -41,8 +45,33 @@
       if(isset($tok["error"])) {
         trigger_error("Token Validation (logged: ".$tok["logged"]."): ".$tok["error"], E_USER_WARNING);
       } else {
-        echo "Token valid!\r\n";
+        echo "Token valid! (logged: ".$tok["logged"].")\r\n";
       }
+
+      //
+      // USER
+      //
+
+      // Get user data with token
+      $usertokendata = $user->getAuthUser($token);
+      if(isset($usertokendata["error"])) {
+        trigger_error("Get user data with token (logged: ".$usertokendata["logged"]."): ".$usertokendata["error"], E_USER_WARNING);
+      } else {
+        echo "Fetched user data with token (".$token.") which was logged as [".$usertokendata["logged"]."] and responded with:\r\n";
+        vardump($usertokendata["data"]);
+      }
+
+      // Is User
+      $isuser = $user->isUser("username");
+      if(isset($isuser["error"])) {
+        trigger_error("Is User (logged: ".$isuser["logged"]."): ".$isuser["error"], E_USER_WARNING);
+      } else {
+        echo "Is user? (Logged: ".$isuser["logged"].") \r\n";
+        vardump($isuser["isuser"]);
+      }
+
+      // Finalize dump of MySQL logs
+      var_dump($db->error_list);
     }
 
   }
