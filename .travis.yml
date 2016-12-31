@@ -1,14 +1,27 @@
 language: php
 php:
-  - '7.0'
-  - '7.1'
+- '7.0'
+- '7.1'
 services:
-  - mysql
+- mysql
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS vucket;'
-  - mysql -e 'CREATE TABLE `vucket`.`accounts` (`id` int(11) NOT NULL, `username` varchar(1000) NOT NULL, `email` varchar(1000) NOT NULL, `password` varchar(255) NOT NULL, `frozen` int(1) NOT NULL, `2fa` int(1) NOT NULL, `secret` varchar(100) NOT NULL, `logtag` varchar(100) NOT NULL, `tokentag` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
-  - mysql -e 'CREATE TABLE `vucket`.`functions` (`id` int(11) NOT NULL, `time` bigint(100) NOT NULL, `state` varchar(15) NOT NULL, `func` varchar(1000) NOT NULL, `logid` int(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
-  - mysql -e 'CREATE TABLE `vucket`.`log` (`id` int(11) NOT NULL, `code` varchar(100) NOT NULL, `trace` varchar(5000) NOT NULL, `mysql` text NOT NULL, `ip` varchar(45) NOT NULL, `time` bigint(100) NOT NULL, `type` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
-  - mysql -e 'CREATE TABLE `vucket`.`tokens` (`id` int(11) NOT NULL, `tokentag` varchar(100) NOT NULL, `token` varchar(50) NOT NULL, `activation` bigint(100) NOT NULL, `expiration` bigint(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
-  - touch secrets.php
+- mysql -e 'CREATE DATABASE IF NOT EXISTS vucket;'
+- mysql -e 'CREATE TABLE `vucket`.`accounts` (`id` int(11) NOT NULL, `username` varchar(1000)
+  NOT NULL, `email` varchar(1000) NOT NULL, `password` varchar(255) NOT NULL, `frozen`
+  int(1) NOT NULL, `2fa` int(1) NOT NULL, `secret` varchar(100) NOT NULL, `logtag`
+  varchar(100) NOT NULL, `tokentag` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`functions` (`id` int(11) NOT NULL, `time` bigint(100)
+  NOT NULL, `state` varchar(15) NOT NULL, `func` varchar(1000) NOT NULL, `logid` int(11)
+  NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`log` (`id` int(11) NOT NULL, `code` varchar(100)
+  NOT NULL, `trace` varchar(5000) NOT NULL, `mysql` text NOT NULL, `ip` varchar(45)
+  NOT NULL, `time` bigint(100) NOT NULL, `type` varchar(100) NOT NULL) ENGINE=InnoDB
+  DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`tokens` (`id` int(11) NOT NULL, `tokentag` varchar(100)
+  NOT NULL, `token` varchar(50) NOT NULL, `activation` bigint(100) NOT NULL, `expiration`
+  bigint(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
+- touch secrets.php
 script: phpunit tests.php
+notifications:
+  slack:
+    secure: p9b1ZL8n8Ud5kpJY7VtcnpJD5yJJHH7yUqtnDQMm5dNT6ADM0rInSMvmklOZSwVdJnegNhpzXNzTkImVvOqRHWeV+dVCv7oc0V05Nk9qdXRdSHJYyzzz58/qS6kiyFVtkdWpZ2/z0xb7+HQF9QGd/sid2tpI51fDX2x1SgulsVA7NGDGaxfYPDRuP25CNSS+d4sMhA2EtWJqcwzAUIYZLnkk65WiythPbJheYbFcDYs/iB8c7ClPbWDOdlQEpe1XAuNZUOtoQNlatkSm4oE4mBdihVsdQum+DHxAW2eHZtTB6VGuIZWzalnMJ8IiiXdodevpAvhqtxHRBJSWyJG6F9PDOUF0ON7I0VxMnrSFBMSd+8aUJXOUjO+dNF3lDWdtJTVkT+cD9yogbumXmnu6HqWbdJvjByIThkLRGZgFx9nX7qZ7Ju5xzJwxivRXKXQPNikNmRys72FpJ+35naGwk3anO6ctn5Cajfyd/+7kDPV+XbD3k7IZOd5/ghtt+c7rlhX1i4fcgiRcs9sbsNzdPENpynNcqk7HpLNKtpAMQID+i6uOAw4/vwmvFIn2PSSLE2dnczz8AYa/YyoOr3lIpswmCOH3gzzXq358YNTyUHBiu3rLXJuUXoMx0mdiLUNv4t8YigfB5XKQ47eD+YVWrGDSCrOpNTS3+N9dA4PG4F0=
