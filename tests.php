@@ -58,7 +58,7 @@
         trigger_error("Get user data with token (logged: ".$usertokendata["logged"]."): ".$usertokendata["error"], E_USER_WARNING);
       } else {
         echo "Fetched user data with token (".$token.") which was logged as [".$usertokendata["logged"]."] and responded with:\r\n";
-        vardump($usertokendata["data"]);
+        var_dump($usertokendata["data"]);
       }
 
       // Is User
@@ -67,7 +67,7 @@
         trigger_error("Is User (logged: ".$isuser["logged"]."): ".$isuser["error"], E_USER_WARNING);
       } else {
         echo "Is user? (Logged: ".$isuser["logged"].") \r\n";
-        vardump($isuser["isuser"]);
+        var_dump($isuser["isuser"]);
       }
 
       // Finalize dump of MySQL logs
