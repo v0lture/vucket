@@ -19,7 +19,7 @@
       $user = new User($auth, $db, $telemetry);
 
       // Register
-      $reg = $auth->register("username", "password", "email@email.email");
+      $reg = $user->register("username", "password", "email@email.email");
       if(isset($reg["error"])) {
         throw new Exception("Register: ".$reg["error"]);
       } else {
