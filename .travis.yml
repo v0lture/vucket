@@ -11,4 +11,4 @@ before_install:
   - mysql -e 'CREATE TABLE `vucket`.`log` (`id` int(11) NOT NULL, `code` varchar(100) NOT NULL, `trace` varchar(5000) NOT NULL, `mysql` text NOT NULL, `ip` varchar(45) NOT NULL, `time` bigint(100) NOT NULL, `type` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
   - mysql -e 'CREATE TABLE `vucket`.`tokens` (`id` int(11) NOT NULL, `tokentag` varchar(100) NOT NULL, `token` varchar(50) NOT NULL, `activation` bigint(100) NOT NULL, `expiration` bigint(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
   - touch secrets.php
-script: phpunit /tests/func-flow.php
+script: phpunit tests/func-flow.php
