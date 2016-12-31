@@ -62,12 +62,35 @@
       }
 
       // Is User
-      $isuser = $user->isUser("username");
+      $isuser = $user->isUser($usertokendata["data"]["username"]);
       if(isset($isuser["error"])) {
         trigger_error("Is User (logged: ".$isuser["logged"]."): ".$isuser["error"], E_USER_WARNING);
       } else {
         echo "Is user? (Logged: ".$isuser["logged"].") \r\n";
         var_dump($isuser["isuser"]);
+      }
+
+      // Read User property with USERNAME + ID
+      $readpropU = $user->readUser($usertokendata["data"]["username"], "username");
+      $readpropI = $user->readUser($usertokendata["data"]["user_id"], "username");
+
+      if(isset($readpropU["error"])) {
+        // an error occurred
+        trigger_error("Read user property (via USERNAME) (logged: ".$readpropU["logged"]."): ".$readpropU["error"], E_USER_WARNING);
+      }
+
+      if(isset($readpropI["error"])) {
+        // an error occurred
+        trigger_error("Read user property (via ID) (logged: ".$readpropI["logged"]."): ".$readpropI["error"], E_USER_WARNING);
+      }
+
+      if(!isset($readpropU["error"]) && !isset($readpropI["error"])) {
+        // proceed
+        if($readpropU["data"]["username"] == $readpropI["data"]["username"]) {
+          echo "Read user property 'username' and was matched via 2 differing identifiers.";
+        } else {
+          trigger_error("Read user property 'username' did not match via 2 differing identifers.\r\nUSERNAME: ".$readpropU["data"]["username"]."\r\nID: ".$readpropI["data"]["username"], E_USER_WARNING);
+        }
       }
 
       // Finalize dump of MySQL logs

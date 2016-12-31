@@ -144,6 +144,81 @@
       }
     }
 
+    // read user props
+    public function readUser($id, $prop) {
+      $id = filter($id);
+      $prop = filter($prop);
+
+      // determine id type and build selector from it
+      if(is_numeric($id)) {
+        // user ID
+        $selector = "WHERE id = ".$id;
+      } else {
+        // username
+
+        // check if exists
+        $iU = $this->isUser($id);
+        if($iU["isuser"] == true) {
+          // set selector
+          $selector = "WHERE username = '".$id."'";
+        } elseif(isset($iU["error"])) {
+          // error occurred, forward error from isUser
+          $this->telemetry->functionLog("success", "readUser", 0);
+          if($iU["logged"] == "yes") {
+            return Array("logged" => "yes", "error" => "isuser_failed");
+          } else {
+            return Array("logged" => $iU["logged"], "error" => "isuser_failed");
+          }
+        } else {
+          // we don't exist
+          $t = $this->telemetry->user("readUser_nonexistent", $id);
+          $this->telemetry->functionLog("success", "readUser", $t["id"]);
+          if($t["d"] == "success") {
+            return Array("logged" => "yes", "error" => "readUser_nonexistent");
+          } else {
+            return Array("logged" => "no: ".$t["d"], "error" => "readUser_nonexistent");
+          }
+        }
+      }
+
+      // see if valid prop
+      if($prop != "id" && $prop != "username" && $prop != "email" && $prop != "frozen" && $prop != "2fa") {
+        $t = $this->telemetry->error("invalid_property", "user.php > readUser() > prop validation", $prop);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "invalid_property");
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "invalid_property");
+        }
+      }
+
+      // query
+      if($rd = $this->dbc->query("SELECT * FROM `accounts` ".$selector." LIMIT 1")) {
+        // process
+        $t = $this->telemetry->user("readprop:".$prop, $id);
+        $this->telemetry->functionLog("success", "readUser", $t["id"]);
+        if($t["d"] == "success") {
+          // actually process after we've logged the request
+          while($d = $rd->fetch_assoc()) {
+            return Array("logged" => "yes", "data" => Array($prop => $d[$prop]));
+          }
+        } else {
+          $tt = $this->telemetry->error("insecure_userread", "user.php > readUser() > user query > query parse");
+          $this->telemetry->functionLog("degraded", "readUser", $tt["id"]);
+          return Array("logged" => "no: ".$t["d"], "error" => "insecure_userread");
+        }
+      } else {
+        // error
+        $t = $this->telemetry->error("userread_failed", "user.php > readUser() > user query", $this->dbc->error);
+        $this->telemetry->functionLog("error", "readUser", $t["id"]);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "userread_failed");
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "userread_failed");
+        }
+      }
+
+    }
+
     // create user
     public function register($user, $pass, $email) {
 
@@ -211,6 +286,7 @@
       for ($i = 0; $i < 50; ++$i) {
         $str .= $keyspace[random_int(0, $max)];
       }
+      $this->telemetry->functionLog("success", "createTag", $t["id"]);
       return $str;
     }
 
