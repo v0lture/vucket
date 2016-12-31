@@ -1,6 +1,8 @@
 <?php
 
-  require_once "../secrets.php";
+  if(!isset($TEST)) {
+    require_once "../secrets.php";
+  }
 
   // Misc parse tools
   function filter($s) {
