@@ -15,7 +15,7 @@
       // create db connection
       $db = new mysqli("localhost", "travis", "", "vucket");
       $telemetry = new Telemetry($db);
-      $auth = new Auth($db);
+      $auth = new Auth($db, $telemetry);
       $user = new User($auth, $db, $telemetry);
 
       // Register
