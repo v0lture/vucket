@@ -41,9 +41,8 @@
     // error logging
     public function error($code, $trace, $mysql="none") {
       // init vars
-
       // Travis CI IP override
-      if(!isset($TEST)) {
+      if(isset($_SERVER["REMOTE_ADDR"])) {
         $ip = filter($_SERVER["REMOTE_ADDR"]);
       } else {
         $ip = "testing_environment";
@@ -65,7 +64,7 @@
     public function auth($code, $username) {
       // init vars
       // Travis CI IP override
-      if(!isset($TEST)) {
+      if(isset($_SERVER["REMOTE_ADDR"])) {
         $ip = filter($_SERVER["REMOTE_ADDR"]);
       } else {
         $ip = "testing_environment";
@@ -89,7 +88,7 @@
     public function token($method, $token) {
       // init vars
       // Travis CI IP override
-      if(!isset($TEST)) {
+      if(isset($_SERVER["REMOTE_ADDR"])) {
         $ip = filter($_SERVER["REMOTE_ADDR"]);
       } else {
         $ip = "testing_environment";
