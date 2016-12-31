@@ -113,7 +113,7 @@
     public function user($action, $logtag) {
       // init vars
       // Travis CI IP override
-      if(!isset($TEST)) {
+      if(!isset($_SERVER["REMOTE_ADDR"])) {
         $ip = filter($_SERVER["REMOTE_ADDR"]);
       } else {
         $ip = "testing_environment";
