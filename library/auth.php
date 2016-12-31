@@ -25,18 +25,18 @@ class Auth {
         if($d->num_rows > 1) {
           // check if weve got duplicate rows
           $t = $this->telemetry->auth("account_dupe", $u);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_dupe");
           } else {
-            return Array("logged" => "no: ".$t, "error" => "account_dupe");
+            return Array("logged" => "no: ".$t["d"], "error" => "account_dupe");
           }
         } elseif($d->num_rows == 0) {
           // no results
           $t = $this->telemetry->auth("account_none", $u);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_none");
           } else {
-            return Array("logged" => "no: ".$t, "error" => "account_none");
+            return Array("logged" => "no: ".$t["d"], "error" => "account_none");
           }
         } else {
           // validate password
@@ -54,28 +54,28 @@ class Auth {
                 $token = $this->token($rd["tokentag"]);
 
                 $t = $this->telemetry->auth("account_login", $u);
-                if($t == "success") {
+                if($t["d"] == "success") {
                   return Array("logged" => "yes", "token" => $token["token"]);
                 } else {
-                  return Array("logged" => "no: ".$t, "token" => $token["token"]);
+                  return Array("logged" => "no: ".$t["d"], "token" => $token["token"]);
                 }
               } else {
                 // frozen, bounce back with frozen error
                 $t = $this->telemetry->auth("account_login_frozen", $u);
-                if($t == "success") {
+                if($t["d"] == "success") {
                   return Array("logged" => "yes", "error" => "account_frozen");
                 } else {
-                  return Array("logged" => "no: ".$t, "error" => "account_frozen");
+                  return Array("logged" => "no: ".$t["d"], "error" => "account_frozen");
                 }
               }
 
             } else {
               // wrong pass, log and return with error
               $t = $this->telemetry->auth("account_login_fail", $u);
-              if($t == "success") {
+              if($t["d"] == "success") {
                 return Array("logged" => "yes", "error" => "invalid_credentials");
               } else {
-                return Array("logged" => "no: ".$t, "error" => "invalid_credentials");
+                return Array("logged" => "no: ".$t["d"], "error" => "invalid_credentials");
               }
             }
           }
@@ -84,10 +84,10 @@ class Auth {
       } else {
         // error, log it, and respond back with details
         $t = $this->telemetry->error("account_filter", "auth.php > Auth > UP() > account validation", $this->dbc->error_list);
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "account_filter", "ctx" => $this->dbc->error_list);
         } else {
-          return Array("logged" => "no: ".$t, "error" => "account_filter", "ctx" => $this->dbc->error_list);
+          return Array("logged" => "no: ".$t["d"], "error" => "account_filter", "ctx" => $this->dbc->error_list);
         }
       }
     }
@@ -134,18 +134,18 @@ class Auth {
     if($this->dbc->query("INSERT INTO `tokens` (`id`, `tokentag`, `token`, `activation`, `expiration`) VALUES (NULL, '".$data[0]."', '".$data[1]."', '".$data[2]."', '".$data[3]."');")) {
       // success, log and return token
       $t = $this->telemetry->token("generate", $data[1]);
-      if($t == "success") {
+      if($t["d"] == "success") {
         return Array("logged" => "yes", "token" => $str);
       } else {
-        return Array("logged" => "no: ".$t, "token" => $str);
+        return Array("logged" => "no: ".$t["d"], "token" => $str);
       }
     } else {
       // log error and return
       $t = $this->telemetry->error("token_creation", "auth.php > Auth > token() > token creation", $this->dbc->error_list);
-      if($t == "success") {
+      if($t["d"] == "success") {
         return Array("logged" => "yes", "error" => "token_creation", "ctx" => $this->dbc->error_list);
       } else {
-        return Array("logged" => "no: ".$t, "error" => "token_creation", "ctx" => $this->dbc->error_list);
+        return Array("logged" => "no: ".$t["d"], "error" => "token_creation", "ctx" => $this->dbc->error_list);
       }
     }
 
@@ -169,19 +169,19 @@ class Auth {
           if($d["expiration"] > $current) {
             // not expired
             $t = $this->telemetry->token("use", $token);
-            if($t == "success") {
+            if($t["d"] == "success") {
               // only reply with tokentag additionally IF the event was logged
               return Array("logged" => "yes", "token" => "is_valid", "tokentag" => $d["tokentag"]);
             } else {
-              return Array("logged" => "no: ".$t, "token" => "is_valid");
+              return Array("logged" => "no: ".$t["d"], "token" => "is_valid");
             }
           } else {
             // expired, like the yogurt in my fridge
             $t = $this->telemetry->token("expired", $token);
-            if($t == "success") {
+            if($t["d"] == "success") {
               return Array("logged" => "yes", "error" => "token_expired");
             } else {
-              return Array("logged" => "no: ".$t, "error" => "token_expired");
+              return Array("logged" => "no: ".$t["d"], "error" => "token_expired");
             }
           }
         }
@@ -189,28 +189,28 @@ class Auth {
       } elseif($rd->num_rows > 1) {
         // multiple results
         $t = $this->telemetry->error("overlapping_token", "auth.php > Auth > validateToken() > query", $this->dbc->error);
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "token_filter");
         } else {
-          return Array("logged" => "no: ".$t, "error" => "token_filter");
+          return Array("logged" => "no: ".$t["d"], "error" => "token_filter");
         }
       } else {
         // no results
         $t = $this->telemetry->auth("token_invalid", $token);
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "token_invalid");
         } else {
-          return Array("logged" => "no: ".$t, "error" => "token_invalid");
+          return Array("logged" => "no: ".$t["d"], "error" => "token_invalid");
         }
       }
 
     } else {
       // can't query this (https://www.youtube.com/watch?v=otCpCn0l4Wo)
       $t = $this->telemetry->error("token_filter", "auth.php > Auth > validateToken() > query", $this->dbc->error);
-      if($t == "success") {
+      if($t["d"] == "success") {
         return Array("logged" => "yes", "error" => "token_filter");
       } else {
-        return Array("logged" => "no: ".$t, "error" => "token_filter");
+        return Array("logged" => "no: ".$t["d"], "error" => "token_filter");
       }
     }
 

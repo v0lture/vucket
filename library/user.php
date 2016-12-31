@@ -35,15 +35,15 @@
             if($rd->num_rows > 1) {
               // too many accounts, throw an error
               $t = $this->telemetry->error("overlapping_tokentags", "user.php > getAuthUser() > tokentag query");
-              if($t == "success") {
+              if($t["d"] == "success") {
                 return Array("logged" => "yes", "error" => "overlapping_tokentags");
               } else {
-                return Array("logged" => "no: ".$t, "error" => "overlapping_tokentags");
+                return Array("logged" => "no: ".$t["d"], "error" => "overlapping_tokentags");
               }
             } elseif($rd->num_rows == 1) {
               // log'n'proceed
               $t = $this->telemetry->user("tokentag_association", $ts["tokentag"]);
-              if($t == "success") {
+              if($t["d"] == "success") {
 
                 // parse data
                 while($d = $rd->fetch_assoc()) {
@@ -53,7 +53,7 @@
               } else {
                 // fail due to insecure validation
                 $tt = $this->telemetry->error("insecure_tokentag_validation", "user.php > getAuthUser() > user assocation");
-                if($t == "success") {
+                if($t["d"] == "success") {
                   return Array ("logged" => "yes", "error" => "insecure_tokentag_validation:".$tt);
                 } else {
                   return Array ("logged" => "no: ".$tt, "error" => "insecure_tokentag_validation:".$tt);
@@ -63,28 +63,28 @@
 
           } else {
             // query error
-            if($t = $this->telemetry->error("user_tokentag_query_failed", "user.php > getAuthUser() > tokentag query", $this->dbc->error) == "success") {
+            if($t["d"] = $this->telemetry->error("user_tokentag_query_failed", "user.php > getAuthUser() > tokentag query", $this->dbc->error) == "success") {
               return Array("logged" => "yes", "error" => "user_tokentag_query_failed");
             } else {
-              return Array("logged" => "no: ".$t, "error" => "user_tokentag_query_failed");
+              return Array("logged" => "no: ".$t["d"], "error" => "user_tokentag_query_failed");
             }
           }
         } else {
           // return insecure Event
           $t = $this->telemetry->error("insecure_token_validation", $token);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array ("logged" => "yes", "error" => "associate_invalid_token:".$ts['error']);
           } else {
-            return Array ("logged" => "no: ".$t, "error" => "associate_invalid_token:".$ts['error']);
+            return Array ("logged" => "no: ".$t["d"], "error" => "associate_invalid_token:".$ts['error']);
           }
         }
       } else {
         // invalid token
         $t = $this->telemetry->user("associate_invalid_token", $token);
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array ("logged" => "yes", "error" => "associate_invalid_token:".$ts['error']);
         } else {
-          return Array ("logged" => "no: ".$t, "error" => "associate_invalid_token:".$ts['error']);
+          return Array ("logged" => "no: ".$t["d"], "error" => "associate_invalid_token:".$ts['error']);
         }
       }
     }
@@ -100,36 +100,40 @@
         // count results
         if($rd->num_rows == 1) {
           $t = $this->telemetry->user("isuser", $user);
-          if($t == "success") {
+          $this->telemetry->functionLog("success", "isUser", 0);
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "isuser" => true);
           } else {
-            return Array("logged" => "no: ".$t, "isuser" => true);
+            return Array("logged" => "no: ".$t["d"], "isuser" => true);
           }
         } elseif($rd->num_rows > 1) {
           // duplicate accounts
           $t = $this->telemetry->error("account_dupe", "user.php > isUser()", "Queried '".$user."'");
-          if($t == "success") {
+          $this->telemetry->functionLog("degraded", "isUser", 0);
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_dupe");
           } else {
-            return Array("logged" => "no: ".$t, "error" => "account_dupe");
+            return Array("logged" => "no: ".$t["d"], "error" => "account_dupe");
           }
         } else {
           // :( we couldn't find anything boss
+          $this->telemetry->functionLog("success", "isUser", 0);
           $t = $this->telemetry->user("isuser_failed", $user);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "isuser" => false);
           } else {
-            return Array("logged" => "no: ".$t, "isuser" => false);
+            return Array("logged" => "no: ".$t["d"], "isuser" => false);
           }
         }
 
       } else {
         // log error and respond back
         $t = $this->telemetry->error("isuser_query", "user.php > isUser() > query", $this->dbc->query);
-        if($t == "success") {
+        $this->telemetry->functionLog("error", "isUser", 0);
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "isuser_query");
         } else {
-          return Array("logged" => "no: ".$t, "error" => "isuser_query");
+          return Array("logged" => "no: ".$t["d"], "error" => "isuser_query");
         }
       }
     }
@@ -147,18 +151,18 @@
       if($iU["isuser"] == true) {
         // respond username taken
         $t = $this->telemetry->error("register_usertaken", "user.php > register() > isUser()");
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "registerusertaken");
         } else {
-          return Array("logged" => "no: ".$t, "error" => "registerusertaken");
+          return Array("logged" => "no: ".$t["d"], "error" => "registerusertaken");
         }
       } elseif(isset($iU["error"])) {
         // an error occurred
         $t = $this->telemetry->error("register_isuser:".$iU["error"], "user.php > register() > isUser()");
-        if($t == "success") {
+        if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "register_isuser:".$iU["error"]);
         } else {
-          return Array("logged" => "no: ".$t, "error" => "register_isuser:".$iU["error"]);
+          return Array("logged" => "no: ".$t["d"], "error" => "register_isuser:".$iU["error"]);
         }
       } else {
         // proceed with register
@@ -171,18 +175,18 @@
         if($this->dbc->query("INSERT INTO `accounts` (`id`, `username`, `email`, `password`, `frozen`, `2fa`, `secret`, `logtag`, `tokentag`) VALUES (NULL, '".$user."', '".$email."', '".$pass."', 0, 0, '', '".$logtag."', '".$tokentag."')")) {
           // creation successful
           $t = $this->telemetry->user("create", $user);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "created" => true);
           } else {
-            return Array("logged" => "no: ".$t, "created" => true);
+            return Array("logged" => "no: ".$t["d"], "created" => true);
           }
         } else {
           // error
           $t = $this->telemetry->error("register_failed", "user.php > register() > isUser() > create query", $this->dbc->error);
-          if($t == "success") {
+          if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "register_failed");
           } else {
-            return Array("logged" => "no: ".$t, "error" => "register_failed");
+            return Array("logged" => "no: ".$t["d"], "error" => "register_failed");
           }
         }
       }
