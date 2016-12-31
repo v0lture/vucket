@@ -286,7 +286,7 @@
       for ($i = 0; $i < 50; ++$i) {
         $str .= $keyspace[random_int(0, $max)];
       }
-      $this->telemetry->functionLog("success", "createTag", $t["id"]);
+      $this->telemetry->functionLog("success", "createTag", 0);
       return $str;
     }
 
