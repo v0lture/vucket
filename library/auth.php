@@ -25,6 +25,7 @@ class Auth {
         if($d->num_rows > 1) {
           // check if weve got duplicate rows
           $t = $this->telemetry->auth("account_dupe", $u);
+          $this->telemetry->functionLog("degraded", "login", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_dupe");
           } else {
@@ -33,6 +34,7 @@ class Auth {
         } elseif($d->num_rows == 0) {
           // no results
           $t = $this->telemetry->auth("account_none", $u);
+          $this->telemetry->functionLog("success", "login", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_none");
           } else {
@@ -54,6 +56,7 @@ class Auth {
                 $token = $this->token($rd["tokentag"]);
 
                 $t = $this->telemetry->auth("account_login", $u);
+                $this->telemetry->functionLog("success", "login", $t["id"]);
                 if($t["d"] == "success") {
                   return Array("logged" => "yes", "token" => $token["token"]);
                 } else {
@@ -62,6 +65,7 @@ class Auth {
               } else {
                 // frozen, bounce back with frozen error
                 $t = $this->telemetry->auth("account_login_frozen", $u);
+                $this->telemetry->functionLog("success", "login", $t["id"]);
                 if($t["d"] == "success") {
                   return Array("logged" => "yes", "error" => "account_frozen");
                 } else {
@@ -72,6 +76,7 @@ class Auth {
             } else {
               // wrong pass, log and return with error
               $t = $this->telemetry->auth("account_login_fail", $u);
+              $this->telemetry->functionLog("success", "login", $t["id"]);
               if($t["d"] == "success") {
                 return Array("logged" => "yes", "error" => "invalid_credentials");
               } else {
@@ -83,7 +88,8 @@ class Auth {
 
       } else {
         // error, log it, and respond back with details
-        $t = $this->telemetry->error("account_filter", "auth.php > Auth > UP() > account validation", $this->dbc->error_list);
+        $t = $this->telemetry->error("account_filter", "auth.php > Auth > login() > account validation", $this->dbc->error_list);
+        $this->telemetry->functionLog("error", "login", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "account_filter", "ctx" => $this->dbc->error_list);
         } else {
@@ -134,6 +140,7 @@ class Auth {
     if($this->dbc->query("INSERT INTO `tokens` (`id`, `tokentag`, `token`, `activation`, `expiration`) VALUES (NULL, '".$data[0]."', '".$data[1]."', '".$data[2]."', '".$data[3]."');")) {
       // success, log and return token
       $t = $this->telemetry->token("generate", $data[1]);
+      $this->telemetry->functionLog("success", "token", $t["id"]);
       if($t["d"] == "success") {
         return Array("logged" => "yes", "token" => $str);
       } else {
@@ -142,6 +149,7 @@ class Auth {
     } else {
       // log error and return
       $t = $this->telemetry->error("token_creation", "auth.php > Auth > token() > token creation", $this->dbc->error_list);
+      $this->telemetry->functionLog("error", "token", $t["id"]);
       if($t["d"] == "success") {
         return Array("logged" => "yes", "error" => "token_creation", "ctx" => $this->dbc->error_list);
       } else {
@@ -169,6 +177,7 @@ class Auth {
           if($d["expiration"] > $current) {
             // not expired
             $t = $this->telemetry->token("use", $token);
+            $this->telemetry->functionLog("success", "validateToken", $t["id"]);
             if($t["d"] == "success") {
               // only reply with tokentag additionally IF the event was logged
               return Array("logged" => "yes", "token" => "is_valid", "tokentag" => $d["tokentag"]);
@@ -178,6 +187,7 @@ class Auth {
           } else {
             // expired, like the yogurt in my fridge
             $t = $this->telemetry->token("expired", $token);
+            $this->telemetry->functionLog("success", "validateToken", $t["id"]);
             if($t["d"] == "success") {
               return Array("logged" => "yes", "error" => "token_expired");
             } else {
@@ -189,6 +199,7 @@ class Auth {
       } elseif($rd->num_rows > 1) {
         // multiple results
         $t = $this->telemetry->error("overlapping_token", "auth.php > Auth > validateToken() > query", $this->dbc->error);
+        $this->telemetry->functionLog("degraded", "validateToken", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "token_filter");
         } else {
@@ -197,6 +208,7 @@ class Auth {
       } else {
         // no results
         $t = $this->telemetry->auth("token_invalid", $token);
+        $this->telemetry->functionLog("success", "validateToken", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "token_invalid");
         } else {
@@ -207,6 +219,7 @@ class Auth {
     } else {
       // can't query this (https://www.youtube.com/watch?v=otCpCn0l4Wo)
       $t = $this->telemetry->error("token_filter", "auth.php > Auth > validateToken() > query", $this->dbc->error);
+      $this->telemetry->functionLog("error", "validateToken", $t["id"]);
       if($t["d"] == "success") {
         return Array("logged" => "yes", "error" => "token_filter");
       } else {

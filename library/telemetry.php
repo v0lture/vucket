@@ -27,7 +27,7 @@
       $time = filter(microtime(true));
 
       // submit to database
-      if($this->dbc->query("INSERT INTO `log` (id, time, state, func, logid) VALUES (NULL, '".$time."', '".$state."', '".$func."', '".$logid."')")){
+      if($this->dbc->query("INSERT INTO `functions` (id, time, state, func, logid) VALUES (NULL, '".$time."', '".$state."', '".$func."', '".$logid."')")){
         return "success";
       } else {
         return "error: ".$this->dbc->error;
