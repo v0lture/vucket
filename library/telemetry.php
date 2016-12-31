@@ -41,7 +41,13 @@
     // error logging
     public function error($code, $trace, $mysql="none") {
       // init vars
-      $ip = filter($_SERVER["REMOTE_ADDR"]);
+
+      // Travis CI IP override
+      if(!isset($TESTS)) {
+        $ip = filter($_SERVER["REMOTE_ADDR"]);
+      } else {
+        $ip = "testing_environment";
+      }
       $code = filter($code);
       $trace = filter($trace);
       $time = filter(microtime(true));
@@ -58,7 +64,12 @@
     // auth logging
     public function auth($code, $username) {
       // init vars
-      $ip = filter($_SERVER["REMOTE_ADDR"]);
+      // Travis CI IP override
+      if(!isset($TESTS)) {
+        $ip = filter($_SERVER["REMOTE_ADDR"]);
+      } else {
+        $ip = "testing_environment";
+      }
       $code = filter($code);
       $username = filter($username);
       $time = filter(microtime(true));
@@ -77,7 +88,12 @@
     // token logging
     public function token($method, $token) {
       // init vars
-      $ip = filter($_SERVER["REMOTE_ADDR"]);
+      // Travis CI IP override
+      if(!isset($TESTS)) {
+        $ip = filter($_SERVER["REMOTE_ADDR"]);
+      } else {
+        $ip = "testing_environment";
+      }
       $method = filter($method);
       $token = filter($token);
       $time = filter(microtime(true));
@@ -96,7 +112,12 @@
     // user logging
     public function user($action, $logtag) {
       // init vars
-      $ip = filter($_SERVER["REMOTE_ADDR"]);
+      // Travis CI IP override
+      if(!isset($TESTS)) {
+        $ip = filter($_SERVER["REMOTE_ADDR"]);
+      } else {
+        $ip = "testing_environment";
+      }
       $action = filter($action);
       $logtag = filter($logtag);
       $time = filter(microtime(true));
