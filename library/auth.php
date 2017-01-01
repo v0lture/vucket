@@ -229,6 +229,74 @@ class Auth {
 
   }
 
+  // expire token
+  public function expireToken($token, $authtoken) {
+    // first check authtoken
+    $vT = $this->validateToken($authtoken);
+    $eT = $this->validateToken($token);
+    if(isset($vT["error"])) {
+
+      $t = $this->telemetry->error("token_fail", "auth.php > expireToken() > validateToken()", $vT["error"]);
+      $this->telemetry->functionLog("error", "expireToken", $t["id"]);
+      if($t["d"] == "success") {
+        return Array("logged" => "yes", "error" => "token_fail:".$vT["error"]);
+      } else {
+        return Array("logged" => "no: ".$t["d"], "error" => "token_fail:".$vT["error"]);
+      }
+    } else {
+      if(isset($eT["error"])) {
+        // invalid token being expired
+        $t = $this->telemetry->error("token_fail", "auth.php > expireToken() > validateToken() > validateToken()", $vT["error"]);
+        $this->telemetry->functionLog("degraded", "expireToken", $t["id"]);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "token_fail:".$eT["error"]);
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "token_fail:".$eT["error"]);
+        }
+      } else {
+        // valid tokens
+        if(isset($vT["tokentag"]) && isset($eT["tokentag"])) {
+          $vTT = $vT["tokentag"];
+          $eTT = $eT["tokentag"];
+          if($vTT == $eTT) {
+            // is owner
+            $t = $this->telemetry->token("manual_expiration", $token);
+            if($t["d"] == "success") {
+              if($this->dbc->query("UPDATE `tokens` SET `expiration` = '".filter(microtime(true))."' WHERE `token` = '".filter($token)."'")) {
+                $this->telemetry->functionLog("success", "expireToken", $t["id"]);
+                return Array("logged" => "yes", "data" => Array("expired" => true));
+              } else {
+                $t = $this->telemetry->error("expiretoken_query", "user.php > expireToken() > validateToken() > validateToken() > query", $this->dbc->error);
+                $this->telemetry->functionLog("error", "expireToken", $t["id"]);
+                if($t["d"] == "success") {
+                  return Array("logged" => "yes", "error" => "expiretoken_query");
+                } else {
+                  return Array("logged" => "no: ".$t, "error" => "expiretoken_query");
+                }
+              }
+            }
+          } else {
+            // isn't owner of token
+            $t = $this->telemetry->error("not_token_owner", "user.php > expireToken() > validateToken() > validateToken() > tokentag check", $this->dbc->error);
+            $this->telemetry->functionLog("degraded", "expireToken", $t["id"]);
+            if($t["d"] == "success") {
+              return Array("logged" => "yes", "error" => "not_token_owner");
+            } else {
+              return Array("logged" => "no: ".$t, "error" => "not_token_owner");
+            }
+          }
+        } else {
+          $t = $this->telemetry->error("tokentagless", "auth.php > expireToken() > validateToken() > validateToken()");
+          $this->telemetry->functionLog("error", "expireToken", $t["id"]);
+          if($t["d"] == "success") {
+            return Array("logged" => "yes", "error" => "tokentagless");
+          } else {
+            return Array("logged" => "no: ".$t["d"], "error" => "tokentagless");
+          }
+        }
+      }
+    }
+  }
 }
 
  ?>

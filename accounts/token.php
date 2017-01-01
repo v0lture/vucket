@@ -13,9 +13,20 @@
   $telemetry = new Telemetry($db);
   $auth = new Auth($db, $telemetry);
 
-  if(isset($_POST["token"])) {
+  if(isset($_POST["token"]) && isset($_POST["mode"])) {
     $t = $_POST["token"];
-    $resp = $auth->validateToken($t);
+    $m = $_POST["mode"];
+
+    if($m == "validate") {
+      $resp = $auth->validateToken($t);
+    } elseif($m == "expire") {
+      if(isset($_POST["authtoken"])) {
+        $at = $_POST["authtoken"];
+        $resp = $auth->expireToken($t, $at);
+      } else {
+        $error = "missing_vars";
+      }
+    }
   } else {
     $error = "missing_vars";
   }
@@ -29,7 +40,11 @@
     $error = $error;
   } else {
     $state = "success";
-    $result = "valid";
+    if(isset($resp["data"])){
+      $result = $resp["data"];
+    } else {
+      $result = "valid";
+    }
   }
 
   // process into json

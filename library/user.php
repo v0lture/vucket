@@ -336,6 +336,7 @@
         // query
         if($this->dbc->query("UPDATE `accounts` SET `".$prop."` = '".$value."'".$selector)){
           $t = $this->telemetry->user("modifyUser", $id);
+          $this->telemetry->functionLog("success", "modifyUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "data" => Array("result" => true, "old" => $old["data"][$prop], "new" => $value));
           } else {
@@ -343,6 +344,7 @@
           }
         } else {
           $t = $this->telemetry->error("modifyUser_query", $id);
+          $this->telemetry->functionLog("error", "modifyUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
           } else {
