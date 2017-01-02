@@ -92,30 +92,17 @@
       }
 
       // Read User property with USERNAME + ID
-      $readpropU = $user->readUser($usertokendata["data"]["username"], "username");
-      $readpropI = $user->readUser($usertokendata["data"]["user_id"], "username");
+      $readpropU = $user->readUser($usertokendata["data"]["username"], "email", $token);
 
       if(isset($readpropU["error"])) {
         // an error occurred
         trigger_error("Read user property (via USERNAME) (logged: ".$readpropU["logged"]."): ".$readpropU["error"], E_USER_WARNING);
-      }
-
-      if(isset($readpropI["error"])) {
-        // an error occurred
-        trigger_error("Read user property (via ID) (logged: ".$readpropI["logged"]."): ".$readpropI["error"], E_USER_WARNING);
-      }
-
-      if(!isset($readpropU["error"]) && !isset($readpropI["error"])) {
-        // proceed
-        if($readpropU["data"]["username"] == $readpropI["data"]["username"]) {
-          echo "Read user property 'username' and was matched via 2 differing identifiers.\r\n";
-        } else {
-          trigger_error("Read user property 'username' did not match via 2 differing identifers.\r\nUSERNAME: ".$readpropU["data"]["username"]."\r\nID: ".$readpropI["data"]["username"], E_USER_WARNING);
-        }
+      } else {
+        echo "Read user property 'email' and got ".$readpropU["data"]["email"]."\r\n";
       }
 
       // Modify user email
-      $modifyprop = $user->modifyUser($usertokendata["data"]["username"], "email", "newemail@email.com");
+      $modifyprop = $user->modifyUser($usertokendata["data"]["username"], "email", "newemail@email.com", $token);
       if(isset($modifyprop["error"])) {
         trigger_error("Modify user property (via USERNAME) (logged: ".$modifyprop["logged"]."): ".$modifyprop["error"], E_USER_WARNING);
       } else {

@@ -15,16 +15,17 @@
   $auth = new Auth($db, $telemetry);
   $user = new User($auth, $db, $telemetry);
 
-  if(isset($_POST["property"]) && isset($_POST["identifier"]) && isset($_POST["mode"])) {
+  if(isset($_POST["property"]) && isset($_POST["identifier"]) && isset($_POST["mode"]) && isset($_POST["token"])) {
     $p = $_POST["property"];
     $i = $_POST["identifier"];
     $m = $_POST["mode"];
+    $t = $_POST["token"];
     if($m == "r") {
-      $resp = $user->readUser($i, $p);
+      $resp = $user->readUser($i, $p, $t);
     } else if($m == "w") {
       if(isset($_POST["value"])) {
         $v = $_POST["value"];
-        $resp = $user->modifyUser($i, $p, $v);
+        $resp = $user->modifyUser($i, $p, $v, $t);
       } else {
         $error = "missing_vars";
       }

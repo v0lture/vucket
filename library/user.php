@@ -145,37 +145,60 @@
     }
 
     // read user props
-    public function readUser($id, $prop) {
+    public function readUser($id, $prop, $token) {
       $id = filter($id);
       $prop = filter($prop);
+      $token = filter($token);
 
-      // determine id type and build selector from it
-      if(is_numeric($id)) {
-        // user ID
-        $selector = "WHERE id = ".$id;
-      } else {
-        // username
-
-        // check if exists
-        $iU = $this->isUser($id);
-        if($iU["isuser"] == true) {
-          // set selector
-          $selector = "WHERE username = '".$id."'";
-        } elseif(isset($iU["error"])) {
-          // error occurred, forward error from isUser
-          if($iU["logged"] == "yes") {
-            return Array("logged" => "yes", "error" => "isuser_failed");
-          } else {
-            return Array("logged" => $iU["logged"], "error" => "isuser_failed");
-          }
+      // validate token
+      $at = $this->getAuthUser($token);
+      if(isset($at["error"])) {
+        // invalid token
+        $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
+        $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
-          // we don't exist
-          $t = $this->telemetry->user("readUser_nonexistent", $id);
+          return Array("logged" => "no: ".$t["d"], "error" => "unauthorized:".$at["error"]);
+        }
+
+      } else {
+        // validate user credentials
+        $atID = $at["data"]["user_id"];
+        $atUN = $at["data"]["username"];
+
+        if($id != $atUN) {
+          // Identifier is a username and does not match token
+          $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
+          $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
           if($t["d"] == "success") {
-            return Array("logged" => "yes", "error" => "readUser_nonexistent");
+            return Array("logged" => "yes", "error" => "unauthorized");
           } else {
-            return Array("logged" => "no: ".$t["d"], "error" => "readUser_nonexistent");
+            return Array("logged" => "no: ".$t["d"], "error" => "unauthorized");
           }
+        }
+
+      }
+
+      // check if exists
+      $iU = $this->isUser($id);
+      if($iU["isuser"] == true) {
+        // set selector
+        $selector = "WHERE username = '".$id."'";
+      } elseif(isset($iU["error"])) {
+        // error occurred, forward error from isUser
+        if($iU["logged"] == "yes") {
+          return Array("logged" => "yes", "error" => "isuser_failed");
+        } else {
+          return Array("logged" => $iU["logged"], "error" => "isuser_failed");
+        }
+      } else {
+        // we don't exist
+        $t = $this->telemetry->user("readUser_nonexistent", $id);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "readUser_nonexistent");
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "readUser_nonexistent");
         }
       }
 
@@ -224,6 +247,18 @@
       $user = filter($user);
       $pass = filter(password_hash($pass, PASSWORD_DEFAULT));
       $email = filter($email);
+
+      // credential checks
+      if(strlen($pass) < 5) {
+        // weak password length
+        $t = $this->telemetry->auth("weak_password", "user.php > register() > isUser()");
+        $this->telemetry->functionLog("degraded", "register", $t["id"]);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "weak_password");
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "weak_password");
+        }
+      }
 
       // check if isUser
       $iU = $this->isUser($user);
@@ -289,44 +324,67 @@
     }
 
     // modify user
-    public function modifyUser($id, $prop, $value) {
+    public function modifyUser($id, $prop, $value, $token) {
       // we gotta change these filters at some point boss, they sure are filtering a lot of things
       $prop = filter($prop);
       $id = filter($id);
       $value = filter($value);
+      $token = filter($token);
 
-      // determine ID type
-      if(is_numeric($id)) {
-        // user ID
-        $selector = "WHERE id = ".$id;
-      } else {
-        // username
-
-        // check if exists
-        $iU = $this->isUser($id);
-        if($iU["isuser"] == true) {
-          // set selector
-          $selector = "WHERE username = '".$id."'";
-        } elseif(isset($iU["error"])) {
-          // error occurred, forward error from isUser
-          if($iU["logged"] == "yes") {
-            return Array("logged" => "yes", "error" => "isuser_failed");
-          } else {
-            return Array("logged" => $iU["logged"], "error" => "isuser_failed");
-          }
+      // validate token
+      $at = $this->getAuthUser($token);
+      if(isset($at["error"])) {
+        // invalid token
+        $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
+        $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
-          // we don't exist
-          $t = $this->telemetry->user("modifyUser_nonexistent", $id);
+          return Array("logged" => "no: ".$t["d"], "error" => "unauthorized:".$at["error"]);
+        }
+
+      } else {
+        // validate user credentials
+        $atID = $at["data"]["user_id"];
+        $atUN = $at["data"]["username"];
+
+        if($id != $atUN) {
+          // Identifier is a username and does not match token
+          $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
+          $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
           if($t["d"] == "success") {
-            return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
+            return Array("logged" => "yes", "error" => "unauthorized");
           } else {
-            return Array("logged" => "no: ".$t["d"], "error" => "modifyUser_nonexistent");
+            return Array("logged" => "no: ".$t["d"], "error" => "unauthorized");
           }
+        }
+
+      }
+
+      $iU = $this->isUser($id);
+      if($iU["isuser"] == true) {
+        // set selector
+        $selector = "WHERE username = '".$id."'";
+      } elseif(isset($iU["error"])) {
+        // error occurred, forward error from isUser
+        if($iU["logged"] == "yes") {
+          return Array("logged" => "yes", "error" => "isuser_failed");
+        } else {
+          return Array("logged" => $iU["logged"], "error" => "isuser_failed");
+        }
+      } else {
+        // we don't exist
+        $t = $this->telemetry->user("modifyUser_nonexistent", $id);
+        if($t["d"] == "success") {
+          return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
+        } else {
+          return Array("logged" => "no: ".$t["d"], "error" => "modifyUser_nonexistent");
         }
       }
 
+
       // get old val
-      $old = $this->readUser($id, $prop);
+      $old = $this->readUser($id, $prop, $token);
 
       // check if errors returned
       if(isset($old["error"])) {
