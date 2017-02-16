@@ -132,6 +132,30 @@
       }
     }
 
+    // billing logging
+    public function billing($action, $logtag) {
+      // init vars
+      // Travis CI IP override
+      if(isset($_SERVER["REMOTE_ADDR"])) {
+        $ip = filter($_SERVER["REMOTE_ADDR"]);
+      } else {
+        $ip = "testing_environment";
+      }
+      $action = filter($action);
+      $logtag = filter($logtag);
+      $time = filter(microtime(true));
+      $mysql = "";
+
+      // submit to database
+      if($this->dbc->query("INSERT INTO `log` (id, code, trace, mysql, ip, time, type) VALUES (NULL, '".$action."', '".$logtag."', '".$mysql."', '".$ip."', '".$time."', 'billing')")){
+        return Array("id" => $this->dbc->insert_id, "d" => "success");
+      } else {
+        // logception
+        $this->error("telemetry_auth", "telemetry.php > user()", $this->dbc->error);
+        return Array("id" => $this->dbc->insert_id, "d" => "error: ".$this->dbc->error);
+      }
+    }
+
   }
 
  ?>

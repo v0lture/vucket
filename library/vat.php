@@ -178,8 +178,14 @@
         $this->telemetry->functionLog("error", "subscribe", 0);
         return Array("logged" => $subs["logged"], "error" => $subs["error"]);
       } else {
+        // to make phpunit happy, check if the results array has a value
+        $subsset = false;
+        if(isset($subs["data"]["apps"])){
+          $subsset = in_array($app, array_column($subs["data"]["apps"], "app"));
+        }
+
         // check if there we already exist
-        if(in_array($app, array_column($subs["data"]["apps"], "app"))) {
+        if($subsset) {
           // update instead
           $rr = $this->updateSubscription($token, $app, $ring);
           if(isset($rr["error"])) {
