@@ -203,7 +203,7 @@
       }
 
       // see if valid prop
-      if($prop != "id" && $prop != "username" && $prop != "email" && $prop != "frozen" && $prop != "2fa") {
+      if($prop != "id" && $prop != "username" && $prop != "email" && $prop != "frozen" && $prop != "2fa" && $prop != "logtag") {
         $t = $this->telemetry->error("invalid_property", "user.php > readUser() > prop validation", $prop);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "invalid_property");

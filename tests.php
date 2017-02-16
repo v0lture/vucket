@@ -109,6 +109,34 @@
         echo "Modify user property (via USERNAME) (logged: ".$modifyprop["logged"]."): ".$modifyprop["data"]["old"]." => ".$modifyprop["data"]["new"]."\r\n";
       }
 
+      // 
+      // vAT
+      //
+
+
+      // subscribe
+      $vat_sub = $vat->subscribe($token, "ex app", 1);
+      if(isset($vat_sub["error"])){
+
+        // :(
+        trigger_error("Subscribe to vAT (via TOKEN) (logged: ".$vat_sub["logged"]."): ".$vat_sub["error"], E_USER_WARNING);
+      } else {
+        // :)
+        echo "vAT subscription succcessful (via TOKEN) (logged: ".$vat_sub["logged"].")\r\n";
+      }
+
+      // get all
+      $vat_subs = $vat->subscriptions($token);
+      if(isset($vat_subs["error"])){
+
+        // :(
+        trigger_error("Get vAT subscriptions (via TOKEN) (logged: ".$vat_subs["logged"]."): ".$vat_subs["error"], E_USER_WARNING);
+      } else {
+        // :)
+        echo "vAT subscription fetch succcessful (via TOKEN) (logged: ".$vat_subs["logged"]."). Echoing...\r\n";
+        var_dump($vat_subs);
+      }
+
 
       // Finalize dump of MySQL logs
       var_dump($db->error_list);

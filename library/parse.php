@@ -19,4 +19,7 @@
     return $s;
   }
 
+  // error reporting
+  // error_reporting(E_ALL);
+
 ?>

@@ -9,7 +9,7 @@
   require_once "../library/user.php";
   require_once "../secrets.php";
   global $db;
-
+  
   // clear empty vars
   $result = NULL;
   $error = NULL;
