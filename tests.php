@@ -7,6 +7,7 @@
   require_once "library/auth.php";
   require_once "library/telemetry.php";
   require_once "library/user.php";
+  require_once "library/vat.php";
 
   class tests extends PHPUnit_Framework_TestCase {
 
@@ -17,6 +18,7 @@
       $telemetry = new Telemetry($db);
       $auth = new Auth($db, $telemetry);
       $user = new User($auth, $db, $telemetry);
+      $vat = new vAT($auth, $db, $telemetry, $user);
 
       //
       // VARIABLES
