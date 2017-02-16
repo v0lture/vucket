@@ -8,6 +8,7 @@
   require_once "library/telemetry.php";
   require_once "library/user.php";
   require_once "library/vat.php";
+  require_once "library/cycles.php";
 
   class tests extends PHPUnit_Framework_TestCase {
 
@@ -19,6 +20,7 @@
       $auth = new Auth($db, $telemetry);
       $user = new User($auth, $db, $telemetry);
       $vat = new vAT($auth, $db, $telemetry, $user);
+      $cycles = new BillingCycle($auth, $db, $telemetry, $user);
 
       //
       // VARIABLES
@@ -137,6 +139,31 @@
         // :)
         echo "vAT subscription fetch succcessful (via TOKEN) (logged: ".$vat_subs["logged"]."). Echoing...\r\n";
         var_dump($vat_subs);
+      }
+
+      //
+      // BILLING
+      //
+
+
+      // assign
+      $cycles_assign = $cycles->assign($token, 30);
+      if(isset($cycles_assign["error"])) {
+        // errored
+        trigger_error("Assign billing date (via TOKEN) (logged: ".$cycles_assign["logged"]."): ".$cycles_assign["error"], E_USER_WARNING);
+      } else {
+        echo "Billing date assigned (via TOKEN) (logged: ".$cycles_assign["logged"].")";
+      }
+
+      // get remaining
+      // (utilizes both fetch functions for double test)
+      $cycles_fetch = $cycles->assign($token, 30);
+      if(isset($cycles_fetch["error"])) {
+        // errored
+        trigger_error("Fetched billing dates and remaining (via TOKEN) (logged: ".$cycles_fetch["logged"]."): ".$cycles_fetch["error"], E_USER_WARNING);
+      } else {
+        echo "Billing dates and remaining fetch (via TOKEN) (logged: ".$cycles_fetch["logged"]."). Echoing...\r\n";
+        var_dump($cycles_fetch);
       }
 
 
