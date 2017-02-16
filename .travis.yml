@@ -20,8 +20,11 @@ before_install:
 - mysql -e 'CREATE TABLE `vucket`.`tokens` (`id` int(11) NOT NULL AUTO_INCREMENT, `tokentag` varchar(100)
   NOT NULL, `token` varchar(50) NOT NULL, `activation` bigint(100) NOT NULL, `expiration`
   bigint(100) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
--  mysql -e 'CREATE TABLE `vucket`.`vat` (`id` int(11) NOT NULL AUTO_INCREMENT, `userid` int(11) NOT NULL, `app` varchar(100) NOT NULL, 
+- mysql -e 'CREATE TABLE `vucket`.`vat` (`id` int(11) NOT NULL AUTO_INCREMENT, `userid` int(11) NOT NULL, `app` varchar(100) NOT NULL, 
   `ring` int(1) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`services` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(3) NOT NULL, `name` varchar(1000) NOT NULL, `price` int(5) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`invoices` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(3) NOT NULL, `userid` int(11) NOT NULL, `due` int(5) NOT NULL, `credits` int(5) NOT NULL, `generated` bigint(100) NOT NULL, `dueby` bigint(100) NOT NULL, `status` int(1) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`cycles` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(3) NOT NULL, `userid` int(11) NOT NULL, `dayofmo` int(2) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
 script: phpunit tests.php
 notifications:
   slack:
