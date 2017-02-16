@@ -22,7 +22,6 @@ before_install:
   bigint(100) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;'
 -  mysql -e 'CREATE TABLE `vucket`.`vat` (`id` int(11) NOT NULL AUTO_INCREMENT, `userid` int(11) NOT NULL, `app` varchar(100) NOT NULL, 
   `ring` int(1) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
-- touch secrets.php
 script: phpunit tests.php
 notifications:
   slack:
