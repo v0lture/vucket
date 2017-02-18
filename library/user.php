@@ -376,7 +376,7 @@
       } else {
         // we don't exist
         $t = $this->telemetry->user("modifyUser_nonexistent", $id);
-        $this->telemetry->functionLog("degraded", "User.modifyUser", $t["id"])
+        $this->telemetry->functionLog("degraded", "User.modifyUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
         } else {
