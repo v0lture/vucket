@@ -29,8 +29,8 @@
       $at = $this->user->getAuthUser($token);
       if(isset($at["error"])) {
         // invalid token
-        $t = $this->telemetry->auth("unauthorized", "vat.php > subscriptions() > getAuthUser()");
-        $this->telemetry->functionLog("degraded", "subscriptions", $t["id"]);
+        $t = $this->telemetry->auth("unauthorized", "vAT.subscriptions() > User.getAuthUser()");
+        $this->telemetry->functionLog("degraded", "vAT.subscriptions", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
@@ -49,7 +49,7 @@
         // no results
         if($d->num_rows == 0) {
           $t = $this->telemetry->user("get_vat_subs", $atUN);
-          $this->telemetry->functionLog("success", "subscriptions", $t["id"]);
+          $this->telemetry->functionLog("success", "vAT.subscriptions", $t["id"]);
 
           if($t["d"] == "success") {
             return Array("logged" => "yes", "data" => Array("count" => 0)); 
@@ -65,7 +65,7 @@
 
           // return
           $t = $this->telemetry->user("get_vat_subs", $atUN);
-          $this->telemetry->functionLog("success", "subscriptions", $t["id"]);
+          $this->telemetry->functionLog("success", "vAT.subscriptions", $t["id"]);
 
           if($t["d"] == "success") {
             return Array("logged" => "yes", "data" => Array("count" => $d->num_rows, "apps" => $rd)); 
@@ -76,8 +76,8 @@
 
 
       } else {
-        $t = $this->telemetry->error("subscriptions_query_failed", "vat.php > subscriptions() > getAuthUser() > query", $this->dbc->error);
-        $this->telemetry->functionLog("error", "subscriptions", $t["id"]);
+        $t = $this->telemetry->error("subscriptions_query_failed", "vAT.subscriptions() > User.getAuthUser() > query", $this->dbc->error);
+        $this->telemetry->functionLog("error", "vAT.subscriptions", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "subscriptions_query_failed");
         } else {
@@ -93,8 +93,8 @@
       $at = $this->user->getAuthUser($token);
       if(isset($at["error"])) {
         // invalid token
-        $t = $this->telemetry->auth("unauthorized", "vat.php > subscriptions() > getAuthUser()");
-        $this->telemetry->functionLog("degraded", "subscriptions", $t["id"]);
+        $t = $this->telemetry->auth("unauthorized", "vAT.UpdatesSubscription() > User.getAuthUser()");
+        $this->telemetry->functionLog("degraded", "vAT.updateSubscription", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
@@ -109,8 +109,8 @@
 
       // validate ring and apps
       if($ring > 3){
-        $t = $this->telemetry->auth("invalid_ring", "vat.php > subscribe() > ring validation");
-        $this->telemetry->functionLog("degraded", "invalid_ring", $t["id"]);
+        $t = $this->telemetry->auth("invalid_ring", "vAT.updateSubscription() > ring validation");
+        $this->telemetry->functionLog("degraded", "vAT.updateSubscription", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "invalid_ring");
         } else {
@@ -121,15 +121,15 @@
       // update subscription
       if($d = $this->dbc->query("UPDATE `vucket`.`vat` SET `ring` = ".filter($ring)." WHERE `userid` = ".filter($atID)." AND `app` = '".filter($app)."'")) {
         $t = $this->telemetry->user("vat_subscription_change", $atUN);
-        $this->telemetry->functionLog("success", "subscribe", $t["id"]);
+        $this->telemetry->functionLog("success", "vAT.updateSubscription", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "data" => Array("success" => true));
         } else {
           return Array("logged" => "no: ".$t["d"], "data" => Array("success"));
         }
       } else {
-        $t = $this->telemetry->error("subscribe_query_failed", "vat.php > subscriptions() > getAuthUser() > query", $this->dbc->error);
-        $this->telemetry->functionLog("error", "subscribe", $t["id"]);
+        $t = $this->telemetry->error("subscribe_query_failed", "vAT.updateSubscription() > User.getAuthUser() > query", $this->dbc->error);
+        $this->telemetry->functionLog("error", "vAT.updateSubscription", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "subscribe_query_failed");
         } else {
@@ -148,8 +148,8 @@
       $at = $this->user->getAuthUser($token);
       if(isset($at["error"])) {
         // invalid token
-        $t = $this->telemetry->auth("unauthorized", "vat.php > subscriptions() > getAuthUser()");
-        $this->telemetry->functionLog("degraded", "subscriptions", $t["id"]);
+        $t = $this->telemetry->auth("unauthorized", "vAT.subscribe() > User.getAuthUser()");
+        $this->telemetry->functionLog("degraded", "vAT.subscribe", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
@@ -164,8 +164,8 @@
 
       // validate ring and apps
       if($ring > 3){
-        $t = $this->telemetry->auth("invalid_ring", "vat.php > subscribe() > ring validation");
-        $this->telemetry->functionLog("degraded", "invalid_ring", $t["id"]);
+        $t = $this->telemetry->auth("invalid_ring", "vAT.subscribe() > ring validation");
+        $this->telemetry->functionLog("degraded", "vAT.subscribe", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "invalid_ring");
         } else {
@@ -175,7 +175,7 @@
 
       if(isset($subs["error"])) {
         // relay the error above
-        $this->telemetry->functionLog("error", "subscribe", 0);
+        $this->telemetry->functionLog("error", "vAT.subscribe", 0);
         return Array("logged" => $subs["logged"], "error" => $subs["error"]);
       } else {
         // to make phpunit happy, check if the results array has a value
@@ -189,10 +189,10 @@
           // update instead
           $rr = $this->updateSubscription($token, $app, $ring);
           if(isset($rr["error"])) {
-            $this->telemetry->functionLog("error", "subscribe", 0);
+            $this->telemetry->functionLog("error", "vAT.subscribe", 0);
             return $rr;
           } else {
-            $this->telemetry->functionLog("success", "subscribe", 0);
+            $this->telemetry->functionLog("success", "vAT.subscribe", 0);
             return $rr;
           }
         } else {
@@ -200,7 +200,7 @@
           if($this->dbc->query("INSERT INTO `vucket`.`vat` (`id`, `userid`, `app`, `ring`) VALUES (NULL, '".$atID."', '".$app."', '".$ring."')")){
             // great
             $t = $this->telemetry->user("vat_subscribed", $atUN);
-            $this->telemetry->functionLog("success", "subscribe", $t["id"]);
+            $this->telemetry->functionLog("success", "vAT.subscribe", $t["id"]);
 
             if($t["d"] == "success") {
               return Array("logged" => "yes", "data" => Array("subscribed" => true));
@@ -209,8 +209,8 @@
             }
           } else {
             // you had one job MySQL
-            $t = $this->telemetry->error("subscribe_query_failed", "vat.php > subscribe() > getAuthUser() > query", $this->dbc->error);
-            $this->telemetry->functionLog("error", "subscribe_query_failed", $t["id"]);
+            $t = $this->telemetry->error("subscribe_query_failed", "vAT.subscribe() > User.getAuthUser() > query", $this->dbc->error);
+            $this->telemetry->functionLog("error", "vAT.subscribe", $t["id"]);
 
             if($t["d"] == "success") {
               return Array("logged" => "yes", "error" => "subscribe_query_failed");
