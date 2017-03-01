@@ -35,9 +35,11 @@
   if(isset($resp["error"])){
     $state = "error";
     $error = $resp["error"];
+    $result = null;
   } elseif(isset($error)) {
     $state = "error";
     $error = $error;
+    $result = null;
   } else {
     $state = "success";
     if(isset($resp["data"])){
@@ -45,6 +47,7 @@
     } else {
       $result = "valid";
     }
+    $error = null;
   }
 
   // process into json

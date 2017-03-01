@@ -69,11 +69,14 @@
   if(isset($resp["error"])){
     $state = "error";
     $error = $resp["error"];
+    $result = null;
   } elseif(isset($error)) {
     $state = "error";
     $error = $error;
+    $result = null;
   } else {
     $state = "success";
+    $error = null;
     $result = $resp["data"];
   }
 

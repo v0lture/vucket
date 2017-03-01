@@ -31,10 +31,12 @@
   // conditionals with error status
   if(isset($resp["error"])){
     $state = "error";
+    $result = null;
     $error = $resp["error"];
   } elseif(isset($error)) {
     $state = "error";
     $error = $error;
+    $result = null;
   } else {
     $state = "success";
     $result = $resp["data"];
