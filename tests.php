@@ -10,7 +10,7 @@
   require_once "library/vat.php";
   require_once "library/cycles.php";
 
-  class PHPUnit_Framework_TestCase {
+  class tests {
 
     public function test() {
 
