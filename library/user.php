@@ -34,8 +34,8 @@
 
             if($rd->num_rows > 1) {
               // too many accounts, throw an error
-              $t = $this->telemetry->error("overlapping_tokentags", "user.php > getAuthUser() > tokentag query");
-              $this->telemetry->functionLog("degraded", "getAuthUser", $t["id"]);
+              $t = $this->telemetry->error("overlapping_tokentags", "User.getAuthUser() > tokentag query");
+              $this->telemetry->functionLog("degraded", "User.getAuthUser", $t["id"]);
               if($t["d"] == "success") {
                 return Array("logged" => "yes", "error" => "overlapping_tokentags");
               } else {
@@ -54,8 +54,8 @@
 
               } else {
                 // fail due to insecure validation
-                $tt = $this->telemetry->error("insecure_tokentag_validation", "user.php > getAuthUser() > user assocation");
-                $this->telemetry->functionLog("degraded", "getAuthUser", $tt["id"]);
+                $tt = $this->telemetry->error("insecure_tokentag_validation", "User.getAuthUser() > user assocation");
+                $this->telemetry->functionLog("degraded", "User.getAuthUser", $tt["id"]);
                 if($t["d"] == "success") {
                   return Array ("logged" => "yes", "error" => "insecure_tokentag_validation:".$tt);
                 } else {
@@ -66,8 +66,8 @@
 
           } else {
             // query error
-            if($t["d"] = $this->telemetry->error("user_tokentag_query_failed", "user.php > getAuthUser() > tokentag query", $this->dbc->error) == "success") {
-              $this->telemetry->functionLog("success", "getAuthUser", $t["id"]);
+            if($t["d"] = $this->telemetry->error("user_tokentag_query_failed", "User.getAuthUser() > tokentag query", $this->dbc->error) == "success") {
+              $this->telemetry->functionLog("success", "User.getAuthUser", $t["id"]);
               return Array("logged" => "yes", "error" => "user_tokentag_query_failed");
             } else {
               return Array("logged" => "no: ".$t["d"], "error" => "user_tokentag_query_failed");
@@ -76,7 +76,7 @@
         } else {
           // return insecure Event
           $t = $this->telemetry->error("insecure_token_validation", $token);
-          $this->telemetry->functionLog("degraded", "getAuthUser", $t["id"]);
+          $this->telemetry->functionLog("degraded", "User.getAuthUser", $t["id"]);
           if($t["d"] == "success") {
             return Array ("logged" => "yes", "error" => "associate_invalid_token:".$ts['error']);
           } else {
@@ -86,7 +86,7 @@
       } else {
         // invalid token
         $t = $this->telemetry->user("associate_invalid_token", $token);
-        $this->telemetry->functionLog("success", "getAuthUser", $t["id"]);
+        $this->telemetry->functionLog("success", "User.getAuthUser", $t["id"]);
         if($t["d"] == "success") {
           return Array ("logged" => "yes", "error" => "associate_invalid_token:".$ts['error']);
         } else {
@@ -106,7 +106,7 @@
         // count results
         if($rd->num_rows == 1) {
           $t = $this->telemetry->user("isuser", $user);
-          $this->telemetry->functionLog("success", "isUser", $t["id"]);
+          $this->telemetry->functionLog("success", "User.isUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "isuser" => true);
           } else {
@@ -114,8 +114,8 @@
           }
         } elseif($rd->num_rows > 1) {
           // duplicate accounts
-          $t = $this->telemetry->error("account_dupe", "user.php > isUser()", "Queried '".$user."'");
-          $this->telemetry->functionLog("degraded", "isUser", $t["id"]);
+          $t = $this->telemetry->error("account_dupe", "User.isUser()", "Queried '".$user."'");
+          $this->telemetry->functionLog("degraded", "User.isUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "account_dupe");
           } else {
@@ -124,7 +124,7 @@
         } else {
           // :( we couldn't find anything boss
           $t = $this->telemetry->user("isuser_failed", $user);
-          $this->telemetry->functionLog("success", "isUser", $t["id"]);
+          $this->telemetry->functionLog("success", "User.isUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "isuser" => false);
           } else {
@@ -134,8 +134,8 @@
 
       } else {
         // log error and respond back
-        $t = $this->telemetry->error("isuser_query", "user.php > isUser() > query", $this->dbc->query);
-        $this->telemetry->functionLog("error", "isUser", $t["id"]);
+        $t = $this->telemetry->error("isuser_query", "User.isUser() > query", $this->dbc->query);
+        $this->telemetry->functionLog("error", "User.isUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "isuser_query");
         } else {
@@ -154,8 +154,8 @@
       $at = $this->getAuthUser($token);
       if(isset($at["error"])) {
         // invalid token
-        $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
-        $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
+        $t = $this->telemetry->auth("unauthorized", "User.readUser() > User.getAuthUser()");
+        $this->telemetry->functionLog("degraded", "User.readUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
@@ -169,7 +169,7 @@
 
         if($id != $atUN) {
           // Identifier is a username and does not match token
-          $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
+          $t = $this->telemetry->auth("unauthorized", "User.readUser() > User.getAuthUser()");
           $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "unauthorized");
@@ -204,7 +204,8 @@
 
       // see if valid prop
       if($prop != "id" && $prop != "username" && $prop != "email" && $prop != "frozen" && $prop != "2fa" && $prop != "logtag") {
-        $t = $this->telemetry->error("invalid_property", "user.php > readUser() > prop validation", $prop);
+        $t = $this->telemetry->error("invalid_property", "User.readUser() > prop validation", $prop);
+        $his->telemetry->functionLog("degraded", "User.readUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "invalid_property");
         } else {
@@ -216,21 +217,21 @@
       if($rd = $this->dbc->query("SELECT * FROM `accounts` ".$selector." LIMIT 1")) {
         // process
         $t = $this->telemetry->user("readprop:".$prop, $id);
-        $this->telemetry->functionLog("success", "readUser", $t["id"]);
+        $this->telemetry->functionLog("success", "User.readUser", $t["id"]);
         if($t["d"] == "success") {
           // actually process after we've logged the request
           while($d = $rd->fetch_assoc()) {
             return Array("logged" => "yes", "data" => Array($prop => $d[$prop]));
           }
         } else {
-          $tt = $this->telemetry->error("insecure_userread", "user.php > readUser() > user query > query parse");
-          $this->telemetry->functionLog("degraded", "readUser", $tt["id"]);
+          $tt = $this->telemetry->error("insecure_userread", "User.readUser() > user query > query parse");
+          $this->telemetry->functionLog("degraded", "User.readUser", $tt["id"]);
           return Array("logged" => "no: ".$t["d"], "error" => "insecure_userread");
         }
       } else {
         // error
-        $t = $this->telemetry->error("userread_failed", "user.php > readUser() > user query", $this->dbc->error);
-        $this->telemetry->functionLog("error", "readUser", $t["id"]);
+        $t = $this->telemetry->error("userread_failed", "User.readUser() > user query", $this->dbc->error);
+        $this->telemetry->functionLog("error", "User.readUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "userread_failed");
         } else {
@@ -251,8 +252,8 @@
       // credential checks
       if(strlen($pass) < 5) {
         // weak password length
-        $t = $this->telemetry->auth("weak_password", "user.php > register() > isUser()");
-        $this->telemetry->functionLog("degraded", "register", $t["id"]);
+        $t = $this->telemetry->auth("weak_password", "User.register() > User.isUser()");
+        $this->telemetry->functionLog("degraded", "User.register", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "weak_password");
         } else {
@@ -264,8 +265,8 @@
       $iU = $this->isUser($user);
       if($iU["isuser"] == true) {
         // respond username taken
-        $t = $this->telemetry->error("register_usertaken", "user.php > register() > isUser()");
-        $this->telemetry->functionLog("success", "register", $t["id"]);
+        $t = $this->telemetry->error("register_usertaken", "User.register() > User.isUser()");
+        $this->telemetry->functionLog("success", "User.register", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "registerusertaken");
         } else {
@@ -273,8 +274,8 @@
         }
       } elseif(isset($iU["error"])) {
         // an error occurred
-        $t = $this->telemetry->error("register_isuser:".$iU["error"], "user.php > register() > isUser()");
-        $this->telemetry->functionLog("success", "register", $t["id"]);
+        $t = $this->telemetry->error("register_isuser:".$iU["error"], "User.register() > User.isUser()");
+        $this->telemetry->functionLog("success", "User.register", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "register_isuser:".$iU["error"]);
         } else {
@@ -291,7 +292,7 @@
         if($this->dbc->query("INSERT INTO `accounts` (`id`, `username`, `email`, `password`, `frozen`, `2fa`, `secret`, `logtag`, `tokentag`) VALUES (NULL, '".$user."', '".$email."', '".$pass."', 0, 0, '', '".$logtag."', '".$tokentag."')")) {
           // creation successful
           $t = $this->telemetry->user("create", $user);
-          $this->telemetry->functionLog("success", "register", $t["id"]);
+          $this->telemetry->functionLog("success", "User.register", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "created" => true);
           } else {
@@ -299,8 +300,8 @@
           }
         } else {
           // error
-          $t = $this->telemetry->error("register_failed", "user.php > register() > isUser() > create query", $this->dbc->error);
-          $this->telemetry->functionLog("error", "register", $t["id"]);
+          $t = $this->telemetry->error("register_failed", "User.register() > User.isUser() > create query", $this->dbc->error);
+          $this->telemetry->functionLog("error", "User.register", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "register_failed");
           } else {
@@ -319,7 +320,7 @@
       for ($i = 0; $i < 50; ++$i) {
         $str .= $keyspace[random_int(0, $max)];
       }
-      $this->telemetry->functionLog("success", "createTag", 0);
+      $this->telemetry->functionLog("success", "User.createTag", 0);
       return $str;
     }
 
@@ -335,8 +336,8 @@
       $at = $this->getAuthUser($token);
       if(isset($at["error"])) {
         // invalid token
-        $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
-        $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
+        $t = $this->telemetry->auth("unauthorized", "User.modifyser() > User.getAuthUser()");
+        $this->telemetry->functionLog("degraded", "User.readUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "unauthorized:".$at["error"]);
         } else {
@@ -350,8 +351,8 @@
 
         if($id != $atUN) {
           // Identifier is a username and does not match token
-          $t = $this->telemetry->auth("unauthorized", "user.php > readUser() > getAuthUser()");
-          $this->telemetry->functionLog("degraded", "readUser", $t["id"]);
+          $t = $this->telemetry->auth("unauthorized", "User.modifyUser() > User.getAuthUser()");
+          $this->telemetry->functionLog("degraded", "User.modifyUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "unauthorized");
           } else {
@@ -375,6 +376,7 @@
       } else {
         // we don't exist
         $t = $this->telemetry->user("modifyUser_nonexistent", $id);
+        $this->telemetry->functionLog("degraded", "User.modifyUser", $t["id"]);
         if($t["d"] == "success") {
           return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
         } else {
@@ -394,7 +396,7 @@
         // query
         if($this->dbc->query("UPDATE `accounts` SET `".$prop."` = '".$value."'".$selector)){
           $t = $this->telemetry->user("modifyUser", $id);
-          $this->telemetry->functionLog("success", "modifyUser", $t["id"]);
+          $this->telemetry->functionLog("success", "User.modifyUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "data" => Array("result" => true, "old" => $old["data"][$prop], "new" => $value));
           } else {
@@ -402,7 +404,7 @@
           }
         } else {
           $t = $this->telemetry->error("modifyUser_query", $id);
-          $this->telemetry->functionLog("error", "modifyUser", $t["id"]);
+          $this->telemetry->functionLog("error", "User.modifyUser", $t["id"]);
           if($t["d"] == "success") {
             return Array("logged" => "yes", "error" => "modifyUser_nonexistent");
           } else {

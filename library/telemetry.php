@@ -79,7 +79,7 @@
         return Array("id" => $this->dbc->insert_id, "d" => "success");
       } else {
         // logception
-        $this->error("telemetry_auth", "telemetry.php > auth()", $this->dbc->error);
+        $this->error("telemetry_auth", "Telemetry.auth", $this->dbc->error);
         return Array("id" => $this->dbc->insert_id, "d" => "error: ".$this->dbc->error);
       }
     }
@@ -103,7 +103,7 @@
         return Array("id" => $this->dbc->insert_id, "d" => "success");
       } else {
         // logception
-        $this->error("telemetry_auth", "telemetry.php > token()", $this->dbc->error);
+        $this->error("telemetry_auth", "Telemetry.token", $this->dbc->error);
         return Array("id" => $this->dbc->insert_id, "d" => "error: ".$this->dbc->error);
       }
     }
@@ -127,7 +127,7 @@
         return Array("id" => $this->dbc->insert_id, "d" => "success");
       } else {
         // logception
-        $this->error("telemetry_auth", "telemetry.php > user()", $this->dbc->error);
+        $this->error("telemetry_auth", "Telemetry.user", $this->dbc->error);
         return Array("id" => $this->dbc->insert_id, "d" => "error: ".$this->dbc->error);
       }
     }
@@ -151,7 +151,7 @@
         return Array("id" => $this->dbc->insert_id, "d" => "success");
       } else {
         // logception
-        $this->error("telemetry_auth", "telemetry.php > user()", $this->dbc->error);
+        $this->error("telemetry_auth", "Telemetry.billing", $this->dbc->error);
         return Array("id" => $this->dbc->insert_id, "d" => "error: ".$this->dbc->error);
       }
     }
