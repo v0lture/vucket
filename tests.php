@@ -9,6 +9,7 @@
   require_once "library/user.php";
   require_once "library/vat.php";
   require_once "library/cycles.php";
+  require_once "library/health.php";
 
   class tests {
 
@@ -21,6 +22,7 @@
       $user = new User($auth, $db, $telemetry);
       $vat = new vAT($auth, $db, $telemetry, $user);
       $cycles = new BillingCycle($auth, $db, $telemetry, $user);
+      $health = new Health($db, $telemetry);
 
       //
       // VARIABLES
@@ -164,6 +166,20 @@
       } else {
         echo "Billing dates and remaining fetch (via TOKEN) (logged: ".$cycles_fetch["logged"]."). Echoing...\r\n";
         var_dump($cycles_fetch);
+      }
+
+      //
+      // HEALTH
+      //
+
+      // fetch
+      $health_fetch = $health->fetch();
+      if(isset($health_fetch["error"])){
+        // errored
+        trigger_error("Fetch health status failed: ".$health_fetch["error"], E_USER_WARNING);
+      } else {
+        echo "Echoing health status...\r\n";
+        var_dump($health_fetch);
       }
 
 

@@ -27,4 +27,5 @@ before_install:
 - mysql -e 'CREATE TABLE `vucket`.`cycles` (`id` int(11) NOT NULL AUTO_INCREMENT, `type` int(3) NOT NULL, `userid` int(11) NOT NULL, `dayofmo` int(2) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
 - mysql -e 'CREATE TABLE `vucket`.`vat_versions` (`id` int(11) NOT NULL AUTO_INCREMENT, `app` varchar(100) NOT NULL, `version` varchar(100) NOT NULL, `ring` int(1) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
 - mysql -e 'CREATE TABLE `vucket`.`install_data` (`id` int(11) NOT NULL AUTO_INCREMENT, `time` bigint(100) NOT NULL, `app` varchar(100) NOT NULL, `version` varchar(100) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
+- mysql -e 'CREATE TABLE `vucket`.`health_cache` (`id` int(11) NOT NULL AUTO_INCREMENT, `created` bigint(100) NOT NULL, `timeframe` int(11) NOT NULL, `success` bigint(100) NOT NULL, `degraded` bigint(100) NOT NULL, `error` bigint(100) NOT NULL, PRIMARY KEY (`id`)) Engine=InnoDB DEFAULT CHARSET=latin1;'
 script: phpunit tests.php
