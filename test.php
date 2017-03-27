@@ -2,18 +2,22 @@
 
   $TEST = true;
 
+  use PHPUnit\Framework\TestCase;
+
+  echo "I'm working at: ".getcwd()."\r\n";
+
   // load files
-  require_once "library/parse.php";
-  require_once "library/auth.php";
-  require_once "library/telemetry.php";
-  require_once "library/user.php";
-  require_once "library/vat.php";
-  require_once "library/cycles.php";
-  require_once "library/health.php";
+  require_once getcwd()."/library/parse.php";
+  require_once getcwd()."/library/auth.php";
+  require_once getcwd()."/library/telemetry.php";
+  require_once getcwd()."/library/user.php";
+  require_once getcwd()."/library/vat.php";
+  require_once getcwd()."/library/cycles.php";
+  require_once getcwd()."/library/health.php";
 
-  class tests {
+  class tests extends TestCase {
 
-    public function test() {
+    public function testA() {
 
       // create db connection
       $db = new mysqli("localhost", "travis", "", "vucket");
